@@ -1,5 +1,5 @@
-#ifndef TWO_Q_CACHE_HPP
-#define TWO_Q_CACHE_HPP
+#ifndef LFU_CACHE_HPP
+#define LFU_CACHE_HPP
 
 #include <iostream>
 #include <unordered_map>
@@ -16,10 +16,10 @@ class LFU_cache {
         size_t min_freq = __LONG_MAX__;
         Page_index_type ret_index = (freqMap.begin())->first;
 
-        for (auto node = freqMap.begin(); node != freqMap.end(); node++) {
-            if (node->second < min_freq) {
-                min_freq = node->second;
-                ret_index = node->first;
+        for (auto node : freqMap) {
+            if (node.second < min_freq) {
+                min_freq = node.second;
+                ret_index = node.first;
             }
         }
 
@@ -27,7 +27,7 @@ class LFU_cache {
     }
 
   public:
-    LFU_cache(size_t capacity_) : capacity(capacity_) {size = 0;}
+    LFU_cache(size_t capacity_) : capacity(capacity_), size(0) {}
 
     Page_data_type* get(Page_index_type index) {
         auto found_page = valueMap.find(index);
@@ -83,5 +83,7 @@ class LFU_cache {
         }
     }
 };
+
+size_t LFU_cache_driver();
 
 #endif

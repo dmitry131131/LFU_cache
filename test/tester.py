@@ -9,6 +9,13 @@ class Test:
     ref_output  = []
     real_output = []
 
+    def __init__(self):
+        self.number      = 0
+        self.status      = False
+        self.input       = []
+        self.ref_output  = []
+        self.real_output = []
+
     def read_test(self, buffer):
         self.number = int((buffer[0].split())[1])
         self.input = (buffer[1].split())[1::]
@@ -46,7 +53,7 @@ for i in range(len(tests_array)):
 
     for cur_val in range(len(result_output)):
         if result_output[cur_val] != ref_output[cur_val]:
-            tests_array[cur_val].status = False
+            tests_array[i].status = False
             break
 
 # output result

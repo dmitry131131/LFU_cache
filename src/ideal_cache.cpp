@@ -2,6 +2,14 @@
 
 #include "ideal_cache.hpp"
 
+int main() {
+    size_t HitCount = ideal_cache_driver();
+
+    std::cout << HitCount << std::endl;
+
+    return 0;
+}
+
 size_t ideal_cache_driver() {
     size_t CacheSize    = 0;
     size_t ElementCount = 0;

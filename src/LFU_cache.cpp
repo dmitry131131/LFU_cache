@@ -2,6 +2,14 @@
 
 #include "LFU_cache.hpp"
 
+int main() {
+    size_t HitCount = LFU_cache_driver();
+    
+    std::cout << HitCount << std::endl;
+
+    return 0;
+}
+
 size_t LFU_cache_driver() {
     size_t CacheSize    = 0;
     size_t ElementCount = 0;

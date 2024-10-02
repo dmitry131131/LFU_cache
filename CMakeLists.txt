@@ -2,7 +2,11 @@ cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 
 project (cache)
 
-add_executable (${PROJECT_NAME})
+set(LFU_CACHE LFU)
+set(IDEAL_CACHE ideal)
+
+add_executable (${LFU_CACHE})
+add_executable (${IDEAL_CACHE})
 
 # add_compile_options(-D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop-optimizations 
 # -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts -Wconditionally-supported 
@@ -19,4 +23,5 @@ add_executable (${PROJECT_NAME})
 # )
 
 add_subdirectory (src)
-target_include_directories (${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories (${LFU_CACHE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories (${IDEAL_CACHE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

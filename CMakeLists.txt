@@ -23,5 +23,6 @@ add_executable (${IDEAL_CACHE})
 # )
 
 add_subdirectory (src)
+add_subdirectory (test/unit)
 target_include_directories (${LFU_CACHE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories (${IDEAL_CACHE} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

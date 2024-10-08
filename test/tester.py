@@ -1,6 +1,6 @@
 import subprocess
 TEST_FILENAME = "tests.txt"
-PATH_TO_EXECUTABLE = "../build/cache"
+PATH_TO_EXECUTABLE = "../build/LFU"
 
 class Test:
     number      = 0

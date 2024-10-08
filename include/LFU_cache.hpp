@@ -12,11 +12,11 @@ class LFU_cache {
     size_t                                              size;
 
   private:
-    Page_index_type get_min_freq_index() {
+    Page_index_type get_min_freq_index() const {
         size_t min_freq = __LONG_MAX__;
         Page_index_type ret_index = (freqMap.begin())->first;
 
-        for (auto node : freqMap) {
+        for (auto& node : freqMap) {
             if (node.second < min_freq) {
                 min_freq = node.second;
                 ret_index = node.first;
@@ -27,18 +27,22 @@ class LFU_cache {
     }
 
   public:
-    LFU_cache(size_t capacity_) : capacity(capacity_), size(0) {}
+    explicit LFU_cache(size_t capacity_) : capacity(capacity_), size(0) {}
 
-    Page_data_type* get(Page_index_type index) {
+    auto begin() { return valueMap.begin(); }
+
+    auto end() { return valueMap.end(); }
+
+    auto get(Page_index_type index) {  // FIXME use iterator as return value
         auto found_page = valueMap.find(index);
 
         if (found_page == valueMap.end())
-            return nullptr;
+            return valueMap.end();
         
         auto page_freq = freqMap.find(index);
         (page_freq->second)++;
 
-        return &(found_page->second);
+        return found_page;
     }
 
     void put(Page_index_type& index, Page_data_type& data) {
@@ -67,23 +71,21 @@ class LFU_cache {
         size++;
     }
 
-    void dump() {
+    void dump() const {
         std::cout << "Capacity: " << capacity << std::endl;
         std::cout << "Size: "     << size     << std::endl;
         // Dump ValueMap
         std::cout << "Dump value map" << std::endl;
-        for (auto node = valueMap.begin(); node != valueMap.end(); node++) {
-            std::cout << "Index: " << node->first << " Value: " << node->second << std::endl;
+        for (auto& [key, val] : valueMap) {
+            std::cout << "Index: " << key << " Value: " << val << std::endl;
         }
 
         // Dump freqMap
         std::cout << "Dump frequency map" << std::endl;
-        for (auto node = freqMap.begin(); node != freqMap.end(); node++) {
-            std::cout << "Index: " << node->first << " Frequency: " << node->second << std::endl;
+        for (auto& [key, val] : freqMap) {
+            std::cout << "Index: " << key << " Frequency: " << val << std::endl;
         }
     }
 };
-
-size_t LFU_cache_driver();
 
 #endif

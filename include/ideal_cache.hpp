@@ -11,6 +11,8 @@
 // К сожалению двойной цикл(
 // После чего считаем количество хитов и сравниваем с LFU кешем
 
+// TODO Переписать входные данные на хеш таблицу с индексом -> элементов, а значением -> позиции, на которых встречается элемент 
+
 template<typename Page_index_type, typename Page_data_type>
 class Ideal_Cache {
   public:
@@ -22,11 +24,11 @@ class Ideal_Cache {
     size_t                                              size;
     std::unordered_map<Page_index_type, Page_data_type> cache;
 
-    std::pair<Page_index_type, Page_data_type> get_farthest_element() {
+    std::pair<Page_index_type, Page_data_type> get_farthest_element() const { // const method
         size_t max_distance                                             = 0;
         std::pair<Page_index_type, Page_data_type> max_distance_element = {};
 
-        for (auto element : cache) {
+        for (auto& element : cache) { // add reference
             size_t cur_element_distance = 0;
 
             for (size_t index = current_position; index < all_data.size(); index++) {   // find curent element distance
@@ -48,15 +50,21 @@ class Ideal_Cache {
     }
   
   public:
-    Ideal_Cache(size_t capacity_) : capacity(capacity_) {size = 0; current_position = 0;} 
+    // move size = 0 and current_position = 0 to init list
+    // read about explicit keyword
+    explicit Ideal_Cache(size_t capacity_) : capacity(capacity_), size(0), current_position(0) {} 
 
-    Page_data_type* get(Page_index_type& index) {
+    auto begin() { return cache.begin(); }
+
+    auto end() { return cache.end(); }
+
+    auto get(Page_index_type& index) { // do not use pointer as return type
         auto found_page = cache.find(index);
 
         if (found_page == cache.end()) 
-            return nullptr;
+            return cache.end();
 
-        return &(found_page->second);
+        return found_page;
     }
 
     void put(Page_index_type& index, Page_data_type& data) {
@@ -73,16 +81,13 @@ class Ideal_Cache {
         size++;
     }
 
-    void cache_dump() {
+    void cache_dump() const { // const method
         std::cout << "Capacity: " << capacity << std::endl;
         std::cout << "Size: " << size << std::endl;
-        
-        for (auto element = cache.begin(); element != cache.end(); element++) {
-            std::cout << "Index: " << element->first << " Data: " << element->second << std::endl;
-        }
+
+        for (auto &[key, page] : cache)
+            std::cout << "Index: " << key << " Data: " << page << std::endl;
     }
 };
-
-size_t ideal_cache_driver();
 
 #endif

@@ -2,6 +2,8 @@
 
 #include "LFU_cache.hpp"
 
+size_t LFU_cache_driver();
+
 int main() {
     size_t HitCount = LFU_cache_driver();
     
@@ -23,7 +25,7 @@ size_t LFU_cache_driver() {
     for (size_t i = 0; i < ElementCount; i++) {
         int element = 0;
         std::cin >> element;
-        if (cache.get(element)) HitCount++;
+        if (cache.get(element) != cache.end()) HitCount++;
         else {
             cache.put(element, element);
         }

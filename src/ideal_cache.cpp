@@ -2,6 +2,8 @@
 
 #include "ideal_cache.hpp"
 
+size_t ideal_cache_driver();
+
 int main() {
     size_t HitCount = ideal_cache_driver();
 
@@ -28,7 +30,7 @@ size_t ideal_cache_driver() {
     }
 
     for (auto element : cache.all_data) {
-        if (cache.get(element.second)) HitCount++;
+        if (cache.get(element.second) != cache.end()) HitCount++;
         else {
             cache.put(element.first, element.second);
         }

@@ -2,7 +2,7 @@
 #define IDEAL_CACHE_HPP
 
 #include <iostream>
-#include <vector>
+#include <queue>
 #include <unordered_map>
 
 // Идея -> считываем всю последовательность элементов во внутренний буфер, и начинаем добавлять элементы в кеш
@@ -16,37 +16,29 @@
 template<typename Page_index_type, typename Page_data_type>
 class Ideal_Cache {
   public:
-    std::vector<std::pair<Page_index_type, Page_data_type>> all_data;           // Input data
+    std::unordered_map<Page_index_type, std::queue<size_t>> input_data; // Input data
     size_t                                                  current_position;
 
   private:
-    size_t                                              capacity;               // Cache data
+    size_t                                              capacity;        // Cache data
     size_t                                              size;
     std::unordered_map<Page_index_type, Page_data_type> cache;
 
-    std::pair<Page_index_type, Page_data_type> get_farthest_element() const { // const method
-        size_t max_distance                                             = 0;
-        std::pair<Page_index_type, Page_data_type> max_distance_element = {};
+    void remove_farthest() {
+        Page_index_type remove_index;
+        size_t max_distance = 0;
 
-        for (auto& element : cache) { // add reference
-            size_t cur_element_distance = 0;
+        for (auto& elem : cache) {
+            auto elem_info = input_data.find(elem.first);
+            size_t elem_distance = (elem_info->second).front();
 
-            for (size_t index = current_position; index < all_data.size(); index++) {   // find curent element distance
-                if ((all_data[index]).second == element.second) {
-                    cur_element_distance = index - current_position;
-                    break;
-                } 
+            if (max_distance < elem_distance) {
+                max_distance = elem_distance;
+                remove_index = elem_info->first;
             }
-
-            if (cur_element_distance > max_distance) {
-                max_distance         = cur_element_distance;
-                max_distance_element = element;
-            }
-
-            if (max_distance >= (all_data.size() - current_position - 1)) return element;
         }
 
-        return max_distance_element;
+        cache.erase(remove_index);
     }
   
   public:
@@ -55,8 +47,7 @@ class Ideal_Cache {
     explicit Ideal_Cache(size_t capacity_) : capacity(capacity_), size(0), current_position(0) {} 
 
     auto begin() { return cache.begin(); }
-
-    auto end() { return cache.end(); }
+    auto end()   { return cache.end();   }
 
     auto get(Page_index_type& index) { // do not use pointer as return type
         auto found_page = cache.find(index);
@@ -64,21 +55,39 @@ class Ideal_Cache {
         if (found_page == cache.end()) 
             return cache.end();
 
+        auto elem_info = input_data.find(index);
+        (elem_info->second).pop();
+
         return found_page;
     }
 
     void put(Page_index_type& index, Page_data_type& data) {
         auto found_page = cache.find(index);
+        auto elem_info  = input_data.find(index);
+        (elem_info->second).pop();
 
         if (found_page != cache.end()) return;  // if page already in cache
 
-        if (size >= capacity) {                  // if cache is full
-            cache.erase(get_farthest_element().first);
-            size--;
+        if ((elem_info->second).empty()) return;    // if page wont meet again
+
+        bool add_flag = false;
+        for (auto& cache_elem : cache) {
+            if (((input_data.find(cache_elem.first))->second).front() < (elem_info->second).front()) {
+                add_flag = true;
+                break;
+            }
+        }
+        
+        if (size >= capacity) {
+            remove_farthest();
+            if (add_flag) cache.emplace(index, data);
+            size++;
+        }
+        else {
+            cache.emplace(index, data);
+            size++;
         }
 
-        cache.insert(std::make_pair(index, data));
-        size++;
     }
 
     void cache_dump() const { // const method

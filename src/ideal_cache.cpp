@@ -21,23 +21,34 @@ size_t ideal_cache_driver() {
     std::cin >> ElementCount;
 
     Ideal_Cache<int, int> cache(CacheSize);
+    std::vector<int> input_data;
 
-    for (size_t i = 0; i < ElementCount; i++) {
-        int element = 0;
-        std::cin >> element;
-  
-        cache.all_data.push_back(std::make_pair(element, element));
+    // Input data into intermediate buffer and in cache 
+    for (size_t position = 0; position < ElementCount; position++) {
+        int elem = 0;
+        std::cin >> elem;
+ 
+        input_data.push_back(elem);
+
+        auto elem_info = cache.input_data.find(elem);
+
+        if (elem_info == cache.input_data.end()) {
+            std::queue<size_t> position_queue;
+            position_queue.push(position);
+
+            cache.input_data.emplace(elem, position_queue);
+        }
+        else {
+            elem_info->second.push(position);
+        }
     }
 
-    for (auto element : cache.all_data) {
-        if (cache.get(element.second) != cache.end()) HitCount++;
+    for (int& element : input_data) {
+        if (cache.get(element) != cache.end()) HitCount++;
         else {
-            cache.put(element.first, element.second);
+            cache.put(element, element);
         }
-
-        (cache.current_position)++;
-
-        // cache.cache_dump();
+        cache.current_position++;
     }
 
     return HitCount;

@@ -30,8 +30,7 @@ class LFU_cache {
     explicit LFU_cache(size_t capacity_) : capacity(capacity_), size(0) {}
 
     auto begin() { return valueMap.begin(); }
-
-    auto end() { return valueMap.end(); }
+    auto end()   { return valueMap.end();   }
 
     auto get(Page_index_type index) {  // FIXME use iterator as return value
         auto found_page = valueMap.find(index);
@@ -59,8 +58,8 @@ class LFU_cache {
                 size--;
             }
 
-            valueMap.insert(std::make_pair(index, data));
-            freqMap.insert(std::make_pair(index, 1));
+            valueMap.emplace(index, data);
+            freqMap.emplace(index, 1);
         }
         else {
             auto page_freq = freqMap.find(index);

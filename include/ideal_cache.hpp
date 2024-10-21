@@ -70,24 +70,20 @@ class Ideal_Cache {
 
         if ((elem_info->second).empty()) return;    // if page wont meet again
 
-        bool add_flag = false;
-        for (auto& cache_elem : cache) {
-            if (((input_data.find(cache_elem.first))->second).front() < (elem_info->second).front()) {
-                add_flag = true;
-                break;
-            }
-        }
-        
-        if (size >= capacity) {
-            remove_farthest();
-            if (add_flag) cache.emplace(index, data);
-            size++;
-        }
-        else {
+        if (size < capacity) {
             cache.emplace(index, data);
             size++;
+            return;
         }
 
+        for (auto& cache_elem : cache) {
+            if (((input_data.find(cache_elem.first))->second).front() < (elem_info->second).front()) {
+                remove_farthest();
+                cache.emplace(index, data);
+                size++;
+                return;
+            }
+        }
     }
 
     void cache_dump() const { // const method

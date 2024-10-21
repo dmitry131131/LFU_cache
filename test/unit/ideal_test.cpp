@@ -5,30 +5,61 @@
 TEST(ideal_test, single_put_get) {
   Ideal_Cache<int, int> cache(5);
 
-  int element = 1;
+  std::vector<int> input_data = {1};
 
-  cache.put(element, element);
+  for (size_t i = 0; i < input_data.size(); i++) {
+    std::queue<size_t> position_queue;
+    position_queue.push(i);
+    position_queue.push(i);
 
-  EXPECT_EQ(cache.get(element)->second, element);
+    cache.input_data.emplace(input_data[i], position_queue);
+  } 
+
+  for (int& element : input_data) {
+    cache.put(element, element);
+  }
+
+  EXPECT_EQ(cache.get(input_data[0])->second, input_data[0]);
 }
 
 TEST(ideal_test, many_put_get) {
   Ideal_Cache<int, int> cache(5);
 
-  int element_1 = 1, element_2 = 2;
+  std::vector<int> input_data = {1, 2};
 
-  cache.put(element_1, element_1);
-  cache.put(element_2, element_2);
+  for (size_t i = 0; i < input_data.size(); i++) {
+    std::queue<size_t> position_queue;
+    position_queue.push(i);
+    position_queue.push(i);
 
-  EXPECT_EQ(cache.get(element_1)->second, element_1);
-  EXPECT_EQ(cache.get(element_2)->second, element_2);
+    cache.input_data.emplace(input_data[i], position_queue);
+  } 
+
+  for (int& element : input_data) {
+    cache.put(element, element);
+  }
+
+  EXPECT_EQ(cache.get(input_data[0])->second, input_data[0]);
+  EXPECT_EQ(cache.get(input_data[1])->second, input_data[1]);
 }
 
 TEST(ideal_test, not_found) {
   Ideal_Cache<int, int> cache(5);
 
-  int element_1 = 1, element_2 = 2;
-  cache.put(element_2, element_2);
+  int element_1 = 1;
+
+  std::vector<int> input_data = {2};
+
+  for (size_t i = 0; i < input_data.size(); i++) {
+    std::queue<size_t> position_queue;
+    position_queue.push(i);
+
+    cache.input_data.emplace(input_data[i], position_queue);
+  } 
+
+  for (int& element : input_data) {
+    cache.put(element, element);
+  }
 
   EXPECT_EQ(cache.get(element_1), cache.end());
 }
